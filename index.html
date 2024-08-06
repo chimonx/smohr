@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover">
+  <title>Student Union BU App</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* Style for the loading image */
+    #loading {
+      display: none; /* Hidden by default */
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent white background */
+      z-index: 2; /* Ensure it's above other elements */
+      text-align: center;
+    }
+    #loading img {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+  </style>
+</head>
+<body>
+  <div id="loading">
+    <img src="https://s10.gifyu.com/images/S5Os0.gif" alt="Loading...">
+  </div>
+
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <script>
+    async function redirectToGoogleForm() {
+      document.getElementById('loading').style.display = 'block'; // Show the loading image
+
+      await liff.init({ liffId: "2006013275-qgvBWBEj" });
+
+      if (!liff.isLoggedIn()) {
+        liff.login();
+      } else {
+        const profile = await liff.getProfile();
+        const accessToken = await liff.getAccessToken();
+        const userId = profile.userId;
+        const displayName = profile.displayName;
+        const pictureUrl = encodeURIComponent(profile.pictureUrl); // Ensure URL encoding for pictureUrl
+
+        const friend = await liff.getFriendship();
+        if (!friend.friendFlag) {
+          document.getElementById('loading').style.display = 'none'; // Hide the loading image
+          if (confirm("คุณยังไม่ได้เพิ่ม สโมสรนักศึกษา เป็นเพื่อน จะเพิ่มเลยไหม?")) {
+            window.location = "https://line.me/R/ti/p/@125jhxql";
+          } else {
+            liff.closeWindow();
+          }
+          return;
+        }
+
+        const formUrl = "https://docs.google.com/forms/d/e/1FAIpQLSc-Q93eDbcskoxIPcUFHGpLQhDBdti10z0Ty2ptaBnBo1cuQQ/viewform";
+        const url = `${formUrl}?usp=pp_url&entry.2128689041=${userId}&entry.1218393752=${accessToken}&entry.105459978=${pictureUrl}&entry.544332031=${displayName}`;
+
+        window.location.href = url;
+      }
+    }
+
+    redirectToGoogleForm();
+  </script>
+</body>
+</html>
